@@ -1,3 +1,9 @@
+#!/usr/bin/env -S node --experimental-modules
+// @ts-check
+import * as fs from "fs/promises"
+import { dirname, join } from "path"
+import { fileURLToPath } from "url"
+
 const screenWidth = 854
 const columnWidth = 38
 
@@ -10,14 +16,14 @@ const maniaKeyColors = [
   { keys: 6, colors: `blue green blue blue green blue` },
   { keys: 7, colors: `blue green blue white blue green blue` },
   { keys: 8, colors: `yellow blue green blue white blue green blue` },
-  { keys: 9, colors: `yellow blue green blue white blue green blue yellow` }
+  { keys: 9, colors: `yellow blue green blue white blue green blue yellow` },
 ]
 
 const columnBackColors = {
   green: `9, 17, 13, 230`,
   blue: `7, 18, 22, 230`,
   white: `2, 5, 6, 230`,
-  yellow: `22, 17, 7, 230`
+  yellow: `22, 17, 7, 230`,
 }
 
 const maniaColumn = (color, index) => `
@@ -35,7 +41,7 @@ const range = (length, value) =>
 
 const infixComma = (length, value) => range(length, value).join(",")
 
-const maniaSection = config => `
+const maniaSection = (config) => `
 [Mania]
 Keys: ${config.keys}
 
@@ -53,10 +59,7 @@ ColumnLineWidth: ${infixComma(config.keys + 1, 0)}
 HitPosition: 418
 LightPosition: 418
 
-${config.colors
-  .split(" ")
-  .map(maniaColumn)
-  .join("")}
+${config.colors.split(" ").map(maniaColumn).join("")}
 `
 
 const header = `
@@ -72,7 +75,7 @@ Version: 2.5
 SliderBallFlip: 0
 CursorRotate: 0
 //CursorTrailRotate: 0
-CursorExpand: 0
+CursorExpand: 1
 CursorCentre: 1
 SliderBallFrames: 10
 //SpinnerFadePlayfield: 1
@@ -111,4 +114,7 @@ ${header}
 ${maniaKeyColors.map(maniaSection).join("")}
 `
 
-console.log(skinContent)
+await fs.writeFile(
+  join(dirname(fileURLToPath(import.meta.url)), `skin/skin.ini`),
+  skinContent,
+)
